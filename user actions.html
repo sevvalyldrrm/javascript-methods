@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      th {
+        border: 2px solid blue;
+        background-color: lightblue;
+        padding: 10px;
+      }
+      td {
+        background-color: aliceblue;
+        padding: 10px;
+      }
+
+      /* table {
+        position: absolute;
+        top: 40%;
+        left: 40%;
+      } */
+
+      button {
+        color: lightblue;
+        margin: 10px;
+      }
+
+      .hide {
+        display: none;
+      }
+
+      .form-radio *{
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="_fav"></p>
+    <table id="myCustomTable">
+      <thead>
+        <tr>
+          <th>İsim</th>
+          <th>Soyisim</th>
+          <th>Yaş</th>
+          <th>Cinsiyet</th>
+          <th>Ülke</th>
+          <th>Favoriler</th>
+          <th>İşlemler</th>
+        </tr>
+      </thead>
+    </table>
+    <script>
+      var users = [
+        {
+          name: "Şevval",
+          surname: "Yıldırım",
+          age: 16,
+          sex: "Female",
+          country: "Türkiye",
+          fav: "Çay",
+          action: "",
+        },
+        {
+          name: "Murat",
+          surname: "Bahadır",
+          age: 20,
+          sex: "Male",
+          country: "Uganda",
+          fav: "Kahve",
+          action: "",
+        },
+        {
+          name: "Ayşe",
+          surname: "Fatma",
+          age: 50,
+          sex: "Female",
+          country: "İtalya",
+          fav: "Çay",
+          action: "",
+        },
+        {
+          name: "Ali",
+          surname: "Yılmaz",
+          age: 40,
+          sex: "Male",
+          country: "İspanya",
+          fav: "Fanta",
+          action: "",
+        },
+        {
+          name: "Kaan",
+          surname: "Yıldırım",
+          age: 32,
+          sex: "Male",
+          country: "Turkiye",
+          fav: "Kahve",
+          action: "",
+        },
+        {
+          name: "Nuriye",
+          surname: "Karagöz",
+          age: 20,
+          sex: "Female",
+          country: "Amerika",
+          fav: "Limonata",
+          action: "",
+        },
+      ];
+      var _countries = ["Türkiye", "Uganda", "İtalya", "İspanya", "Amerika"];
+      var _sex = ["Female", "Male"];
+      var _fav = ["Çay", "Kahve", "Limonata", "Fanta"];
+var _globalId=0;
+      function getSelectHtml(options, selectedOption, className, propName) {
+        var html = `<select class="${className}" prop-name="${propName}">`;
+        options.forEach((opt) => {
+          if (opt == selectedOption) {
+            html += `<option selected>${opt}</option>`;
+          } else {
+            html += `<option>${opt}</option>`;
+          }
+        });
+        html += `</select>`;
+        return html;
+      }
+
+      function getRadioHtml(options, checkedOption,name,  className, propName) {
+        var html = `<div class="custom-radio ${className}" prop-name=${propName}>`;
+        options.forEach((opt) => {
+          _globalId++;
+          html += `<div class="form-radio">`;
+            if(opt == checkedOption){
+              html+=`<input type="radio"  name="${name}" id="radio_${_globalId}" value="${opt}" checked="true" /><label for="radio_${_globalId}">${opt}</label>`;
+
+            }else{
+              html+=`<input type="radio"  name="${name}" value="${opt}" id="radio_${_globalId}" /><label for="radio_${_globalId}">${opt}</label>`;
+
+            }
+
+          
+          html += `</div>`;
+        });
+
+        html += "</div>";
+        return html;
+      }
+
+      function generateTable() {
+        var table = document.getElementById("myCustomTable");
+        var tBody = document.createElement("tbody");
+        var allRows = "";
+        for (let i = 0; i < users.length; i++) {
+          var user = users[i];
+          var _row = `<tr id="tr_${i}">
+            <td prop-name="name">
+              <span  class="table-text" >${user.name}</span>
+              <input class="table-input hide" value="${user.name}"/>
+            </td>
+            <td prop-name="surname">
+              <span   class="table-text">${user.surname}</span>
+              <input   class="table-input hide" value="${user.surname}" />
+              </td>
+            <td  prop-name="age">
+              <span class="table-text">${user.age}</span>
+              <input class="table-input hide" type="number" value="${
+                user.age
+              }" />
+              </td>
+            <td  prop-name="sex">
+              <span class="table-text">${user.sex}</span>
+              ${getSelectHtml(_sex, user.sex, "table-input hide", "sex")}
+            </td>
+            <td prop-name="country">
+              <span class="table-text">${user.country}</span>
+              ${getSelectHtml(
+                _countries,
+                user.country,
+                "table-input hide",
+                "country"
+              )}
+            </td>
+            <td prop-name="fav">
+              <span class="table-text">${user.fav}</span>
+              ${getRadioHtml(_fav, user.fav,'favorities'+i, "table-input ", "fav")}
+            </td>
+            <td>
+              <button class="table-remove-button" target-index="${i}">Sil</button>
+              <button class="table-update-button" target-index="${i}">Güncelle</button>
+              <button class="table-save-button hide" target-index="${i}">Kaydet</button> 
+              <button class="table-cancel-button hide" target-index="${i}">İptal</button>
+            </td>
+            </tr> `;
+          allRows += _row;
+        }
+        tBody.innerHTML = allRows;
+        table.appendChild(tBody);
+
+        document.querySelectorAll(".table-remove-button").forEach((btn) => {
+          btn.onclick = () => {
+            var index = btn.getAttribute("target-index");
+            document.getElementById("tr_" + index).remove();
+          };
+        });
+
+        document.querySelectorAll(".table-update-button").forEach((btn) => {
+          btn.onclick = () => {
+            var index = btn.getAttribute("target-index");
+            var tr = document.getElementById("tr_" + index);
+            tr.querySelectorAll("td>.table-text").forEach((span) => {
+              span.classList.add("hide");
+            });
+            tr.querySelectorAll("td>.table-input").forEach((input) => {
+              input.classList.remove("hide");
+            });
+            tr.querySelector("td>.table-save-button").classList.remove("hide");
+            tr.querySelector("td>.table-cancel-button").classList.remove(
+              "hide"
+            );
+            btn.classList.add("hide");
+          };
+        });
+        document.querySelectorAll(".table-save-button").forEach((btn) => {
+          btn.onclick = () => {
+            var index = btn.getAttribute("target-index");
+            var tr = document.getElementById("tr_" + index);
+            var user = users[index];
+            tr.querySelectorAll("td>.table-input").forEach((input) => {
+              // if (input.name == "name") {
+              //   users[index].name = input.value;
+              // } else if (input.name == "surname") {
+              //   users[index].surname = input.value;
+              // }
+              // else if (input.name == "age") {
+              //   users[index].age = input.value;
+              // }
+              // else if (input.name == "sex") {
+              //   users[index].sex = input.value;
+              // }
+              // else if (input.name == "country") {
+              //   users[index].country = input.value;
+              // }
+
+              var propName = input.parentNode.getAttribute("prop-name");
+              user[propName] = input.value;
+
+              tr.querySelector("td>.table-cancel-button").classList.add("hide");
+              tr.querySelector("td>.table-update-button").classList.remove(
+                "hide"
+              );
+              btn.classList.add("hide");
+            });
+
+            tr.querySelectorAll("td>.table-text").forEach((span) => {
+              span.classList.remove("hide");
+              var propName = span.parentNode.getAttribute("prop-name");
+              var newValue = user[propName];
+              user[propName] = span.value;
+              span.innerHTML = newValue;
+            });
+            tr.querySelectorAll("td>.table-input").forEach((input) => {
+              input.classList.add("hide");
+            });
+          };
+        });
+
+        document.querySelectorAll(".table-cancel-button").forEach((btn) => {
+          btn.onclick = () => {
+            var index = btn.getAttribute("target-index");
+            var tr = document.getElementById("tr_" + index);
+            tr.querySelector("td>.table-save-button").classList.add("hide");
+            tr.querySelector("td>.table-update-button").classList.remove(
+              "hide"
+            );
+            btn.classList.add("hide");
+            tr.querySelectorAll("td>.table-text").forEach((span) => {
+              span.classList.remove("hide");
+            });
+            tr.querySelectorAll("td>.table-input").forEach((input) => {
+              input.classList.add("hide");
+            });
+          };
+        });
+      }
+      generateTable();
+    </script>
+  </body>
+</html>
